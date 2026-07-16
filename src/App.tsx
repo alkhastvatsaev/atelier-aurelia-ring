@@ -1,4 +1,4 @@
-import { Check, Code2, Download, Gem, RotateCcw, Share2 } from 'lucide-react'
+import { ArrowUpRight, Check, Code2, Download, RotateCcw, Share2 } from 'lucide-react'
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import './App.css'
 import {
@@ -50,8 +50,18 @@ function initialConfig() {
   }
 }
 
+function canUseWebGL() {
+  try {
+    const canvas = document.createElement('canvas')
+    return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'))
+  } catch {
+    return false
+  }
+}
+
 export default function App() {
   const [config, setConfig] = useState<RingConfig>(initialConfig)
+  const [webglAvailable] = useState(canUseWebGL)
   const [notice, setNotice] = useState('')
   const price = useMemo(() => ringPrice(config), [config])
   const update = <K extends keyof RingConfig>(key: K, value: RingConfig[K]) =>
@@ -92,7 +102,6 @@ export default function App() {
           <span>ATELIER AURELIA</span>
         </a>
         <div className="header-meta">
-          <span>PIÈCE N° 0427</span>
           <a
             href="https://github.com/alkhastvatsaev/atelier-aurelia-ring"
             target="_blank"
@@ -106,14 +115,26 @@ export default function App() {
 
       <section className="workspace">
         <div className="viewer">
-          <div className="eyebrow"><span /> VOTRE CRÉATION, EN TEMPS RÉEL</div>
           <div className="scene">
-            <Suspense fallback={<div className="scene-loader">FAÇONNAGE EN COURS…</div>}>
-              <RingScene config={config} />
-            </Suspense>
+            {webglAvailable ? (
+              <Suspense fallback={<div className="scene-loader">AURELIA</div>}>
+                <RingScene config={config} />
+              </Suspense>
+            ) : (
+              <div className="static-ring" role="img" aria-label="Aperçu simplifié de la bague">
+                <span style={{ borderColor: metals[config.metal].color }}>
+                  <i
+                    style={{
+                      background: stones[config.stone].color,
+                      borderColor: metals[config.metal].color,
+                    }}
+                  />
+                </span>
+              </div>
+            )}
           </div>
           <div className="viewer-tools">
-            <span className="drag-hint">GLISSEZ POUR FAIRE TOURNER · PINCEZ POUR ZOOMER</span>
+            <span className="drag-hint">360°</span>
             <div>
               <button type="button" className="icon-button" onClick={download} aria-label="Télécharger une image">
                 <Download size={18} />
@@ -126,14 +147,10 @@ export default function App() {
         </div>
 
         <aside className="configurator">
-          <div className="title-block">
-            <p>COLLECTION SIGNATURE</p>
-            <h1>Composez<br />votre éternité.</h1>
-            <span>Chaque détail est une promesse. Façonnez une pièce qui ne ressemble qu’à vous.</span>
-          </div>
+          <h1 className="sr-only">Créez votre bague</h1>
 
           <section className="control-group">
-            <div className="section-title"><span>01</span><h2>Le métal</h2></div>
+            <div className="section-title"><h2>Métal</h2></div>
             <div className="option-grid">
               {Object.entries(metals).map(([id, metal]) => (
                 <Option
@@ -148,7 +165,7 @@ export default function App() {
           </section>
 
           <section className="control-group">
-            <div className="section-title"><span>02</span><h2>La pierre</h2></div>
+            <div className="section-title"><h2>Pierre</h2></div>
             <div className="option-grid">
               {Object.entries(stones).map(([id, stone]) => (
                 <Option
@@ -160,7 +177,7 @@ export default function App() {
                 />
               ))}
             </div>
-            <label className="field-label">Taille de la pierre <b>{config.carats.toFixed(1)} ct</b></label>
+            <label className="field-label">Carats <b>{config.carats.toFixed(1)} ct</b></label>
             <input
               type="range"
               min="0.5"
@@ -178,14 +195,15 @@ export default function App() {
                   className={config.cut === id ? 'active' : ''}
                   onClick={() => update('cut', id as RingConfig['cut'])}
                 >
-                  <Gem size={16} /><span>{cut.label}</span>
+                  <span className={`cut-shape ${id}`} aria-hidden="true" />
+                  <span>{cut.label}</span>
                 </button>
               ))}
             </div>
           </section>
 
           <section className="control-group">
-            <div className="section-title"><span>03</span><h2>Votre secret</h2></div>
+            <div className="section-title"><h2>Gravure</h2></div>
             <label className="engraving">
               <input
                 value={config.engraving}
@@ -196,7 +214,7 @@ export default function App() {
               <span>{config.engraving.length}/24</span>
             </label>
             <div className="size-row">
-              <label htmlFor="size">Taille de l’anneau</label>
+              <label htmlFor="size">Taille</label>
               <select id="size" value={config.size} onChange={(event) => update('size', Number(event.target.value))}>
                 {[48, 50, 52, 54, 56, 58, 60, 62].map((size) => <option key={size}>{size}</option>)}
               </select>
@@ -204,13 +222,18 @@ export default function App() {
           </section>
 
           <div className="summary">
-            <div><span>Estimation</span><strong>{price.toLocaleString('fr-FR')} €</strong></div>
-            <p>Fabriquée à la main sous 4 à 6 semaines · Livraison assurée offerte</p>
+            <div><span>Total</span><strong>{price.toLocaleString('fr-FR')} €</strong></div>
             <button type="button" className="primary" onClick={() => flash('Votre création est réservée')}>
-              RÉSERVER CETTE CRÉATION <span>↗</span>
+              CONTINUER <ArrowUpRight size={16} />
             </button>
-            <button type="button" className="reset" onClick={() => setConfig(defaultConfig)}>
-              <RotateCcw size={13} /> Recommencer
+            <button
+              type="button"
+              className="reset"
+              onClick={() => setConfig(defaultConfig)}
+              aria-label="Réinitialiser la bague"
+              title="Réinitialiser"
+            >
+              <RotateCcw size={14} />
             </button>
           </div>
         </aside>
