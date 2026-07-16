@@ -47,6 +47,7 @@ describe('millimeter jewelry engine', () => {
         ...design.layout.prongs.map((entity) => entity.id),
         ...design.layout.galleries.map((entity) => entity.id),
         ...design.layout.beads.map((entity) => entity.id),
+        ...design.layout.seats.map((entity) => entity.id),
       ]
       expect(new Set(ids).size).toBe(ids.length)
       expect(design.layout.units).toBe('mm')
@@ -54,6 +55,7 @@ describe('millimeter jewelry engine', () => {
       const stoneIds = new Set(design.layout.stones.map((stone) => stone.id))
       expect(design.layout.prongs.every((prong) => stoneIds.has(prong.stoneId))).toBe(true)
       expect(design.layout.galleries.every((gallery) => stoneIds.has(gallery.stoneId))).toBe(true)
+      expect(design.layout.seats.every((seat) => stoneIds.has(seat.stoneId))).toBe(true)
     }
   })
 
@@ -78,7 +80,9 @@ describe('millimeter jewelry engine', () => {
       )
       for (const stone of paveStones) {
         const prongs = design.layout.beads.filter((bead) => bead.stoneId === stone.id)
+        const seats = design.layout.seats.filter((seat) => seat.stoneId === stone.id)
         expect(prongs).toHaveLength(4)
+        expect(seats).toHaveLength(1)
         expect(prongs.map((prong) => prong.angleDeg).sort((a, b) => a - b)).toEqual([
           45,
           135,
@@ -121,6 +125,7 @@ describe('millimeter jewelry engine', () => {
     invalid.prongs[0].end[0] += 10
     invalid.stones[1].center = [...invalid.stones[0].center]
     invalid.beads = invalid.beads.slice(1)
+    invalid.seats = invalid.seats.slice(1)
     const report = validateDesign(invalid)
 
     expect(report.status).toBe('impossible')
@@ -128,6 +133,7 @@ describe('millimeter jewelry engine', () => {
     expect(report.results.some((result) => result.code === 'PRONG_ANGLE')).toBe(true)
     expect(report.results.some((result) => result.code === 'STONE_CLEARANCE')).toBe(true)
     expect(report.results.some((result) => result.code === 'PAVE_FOUR_PRONGS')).toBe(true)
+    expect(report.results.some((result) => result.code === 'PAVE_BOOLEAN_SEAT')).toBe(true)
   })
 
   it('adds alloy-specific shrinkage and finishing allowance', () => {

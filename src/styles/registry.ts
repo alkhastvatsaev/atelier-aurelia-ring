@@ -4,6 +4,7 @@ import type {
   LayoutBead,
   LayoutGallery,
   LayoutProng,
+  LayoutSeat,
   LayoutStone,
   Vec3Mm,
 } from '../geometry/types'
@@ -15,6 +16,7 @@ export type StyleGeometry = {
   prongs: LayoutProng[]
   galleries: LayoutGallery[]
   beads: LayoutBead[]
+  seats: LayoutSeat[]
   radialThicknessMm: number
   axialWidthMm: number
   sizeBarDegrees: number
@@ -121,6 +123,24 @@ function fourPaveProngs(
   })
 }
 
+function paveSeat(stone: LayoutStone, radialAngle: number): LayoutSeat {
+  const depthMm = stone.dimensions.pavilionDepth + 0.3
+  const outwardOffset = 0.06
+  return {
+    id: `${stone.id}-seat`,
+    stoneId: stone.id,
+    center: [
+      stone.center[0] - Math.cos(radialAngle) * (depthMm / 2 - outwardOffset),
+      stone.center[1] - Math.sin(radialAngle) * (depthMm / 2 - outwardOffset),
+      stone.center[2],
+    ],
+    rotation: [0, 0, radialAngle - Math.PI / 2],
+    depthMm,
+    topRadiusMm: stone.dimensions.width * 0.46,
+    bottomRadiusMm: stone.dimensions.width * 0.14,
+  }
+}
+
 function makePaveShoulders(
   outerRadius: number,
   exclusionHalfAngle: number,
@@ -129,12 +149,12 @@ function makePaveShoulders(
     estimateStoneDimensions('diamond', 'round', 0.01),
     1,
   )
-  const stoneRadius = dimensions.width / 2
-  const orbit = outerRadius + stoneRadius - 0.12
+  const orbit = outerRadius + 0.08
   const pitch = dimensions.width + 0.15
   const step = 2 * Math.asin(pitch / (2 * orbit))
   const stones: LayoutStone[] = []
   const beads: LayoutBead[] = []
+  const seats: LayoutSeat[] = []
 
   let index = 0
   for (let angle = 0.52; angle < Math.PI / 2 - exclusionHalfAngle; angle += step) {
@@ -155,11 +175,12 @@ function makePaveShoulders(
       }
       stones.push(stone)
       beads.push(...fourPaveProngs(stone, mirrored))
+      seats.push(paveSeat(stone, mirrored))
       index += 1
     }
   }
 
-  return { stones, beads }
+  return { stones, beads, seats }
 }
 
 function solitaireRecipe({ config, innerRadiusMm }: RecipeContext): StyleGeometry {
@@ -188,6 +209,7 @@ function solitaireRecipe({ config, innerRadiusMm }: RecipeContext): StyleGeometr
     prongs: setting.prongs,
     galleries: [setting.gallery],
     beads: pave.beads,
+    seats: pave.seats,
     radialThicknessMm,
     axialWidthMm,
     sizeBarDegrees: 105,
@@ -261,11 +283,17 @@ function threeStoneRecipe(context: RecipeContext): StyleGeometry {
     rotation: [0, 0, side * 0.12],
   }))
   const settings = sides.map((stone) => stoneSetting(stone, 4))
+  const retainedPave = base.stones
+    .filter((stone) => stone.role === 'pave')
+    .slice(0, 4)
+  const retainedPaveIds = new Set(retainedPave.map((stone) => stone.id))
   return {
     ...base,
-    stones: [center, ...sides, ...base.stones.filter((stone) => stone.role === 'pave').slice(0, 4)],
+    stones: [center, ...sides, ...retainedPave],
     prongs: [...base.prongs, ...settings.flatMap((setting) => setting.prongs)],
     galleries: [base.galleries[0], ...settings.map((setting) => setting.gallery)],
+    beads: base.beads.filter((bead) => retainedPaveIds.has(bead.stoneId)),
+    seats: base.seats.filter((seat) => retainedPaveIds.has(seat.stoneId)),
     radialThicknessMm: 2,
     axialWidthMm: 2.6,
   }
@@ -275,7 +303,7 @@ function eternityRecipe({ config, innerRadiusMm }: RecipeContext): StyleGeometry
   const radialThicknessMm = 1.8
   const axialWidthMm = 2.8
   const dimensions = estimateStoneDimensions('diamond', 'round', 0.02)
-  const orbit = innerRadiusMm + radialThicknessMm + dimensions.width / 2 - 0.12
+  const orbit = innerRadiusMm + radialThicknessMm + 0.08
   const pitch = dimensions.width + 0.15
   const count = Math.max(16, Math.floor((Math.PI * 2 * orbit) / pitch))
   const stones = Array.from({ length: count }, (_, index): LayoutStone => {
@@ -293,11 +321,15 @@ function eternityRecipe({ config, innerRadiusMm }: RecipeContext): StyleGeometry
   const beads = stones.flatMap((stone, index) =>
     fourPaveProngs(stone, (index / count) * Math.PI * 2),
   )
+  const seats = stones.map((stone, index) =>
+    paveSeat(stone, (index / count) * Math.PI * 2),
+  )
   return {
     stones,
     prongs: [],
     galleries: [],
     beads,
+    seats,
     radialThicknessMm,
     axialWidthMm,
     sizeBarDegrees: 0,

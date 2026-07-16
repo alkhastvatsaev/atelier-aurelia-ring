@@ -5,6 +5,7 @@ import { gemstones } from '../../domain/gemstones'
 import { alloys } from '../../domain/materials'
 import type { LayoutGallery, LayoutProng, LayoutStone, Vec3Mm } from '../../geometry/types'
 import type { RingDesign } from '../../geometry/buildDesign'
+import { BooleanShank } from './BooleanShank'
 import { createGemGeometry } from './gemGeometries'
 import { GemMaterial, MetalMaterial } from './materials'
 
@@ -104,9 +105,6 @@ function Gallery({ gallery, color }: { gallery: LayoutGallery; color: string }) 
 export function RingPreview({ design }: { design: RingDesign }) {
   const { layout } = design
   const alloy = alloys[layout.metal]
-  const tubeRadius = layout.shank.radialThicknessMm / 2
-  const torusRadius = layout.shank.innerRadiusMm + tubeRadius
-  const axialScale = layout.shank.axialWidthMm / layout.shank.radialThicknessMm
 
   return (
     <Float speed={0.75} rotationIntensity={0.02} floatIntensity={0.05}>
@@ -115,10 +113,7 @@ export function RingPreview({ design }: { design: RingDesign }) {
         rotation={[0.5, -0.24, -0.055]}
         position={[0, -0.18, 0]}
       >
-        <mesh scale={[1, 1, axialScale]} castShadow receiveShadow>
-          <torusGeometry args={[torusRadius, tubeRadius, 40, 220]} />
-          <MetalMaterial color={alloy.color} platinum={layout.metal === 'platinum'} />
-        </mesh>
+        <BooleanShank layout={layout} color={alloy.color} />
 
         {layout.galleries.map((gallery) => (
           <Gallery key={gallery.id} gallery={gallery} color={alloy.color} />

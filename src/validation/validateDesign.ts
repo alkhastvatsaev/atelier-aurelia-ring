@@ -204,6 +204,50 @@ function validatePaveProngs(layout: SemanticLayout): RuleResult[] {
   return results
 }
 
+function validatePaveSeats(layout: SemanticLayout): RuleResult[] {
+  const results: RuleResult[] = []
+  const outerRadius =
+    layout.shank.innerRadiusMm + layout.shank.radialThicknessMm
+  const paveStones = layout.stones.filter(
+    (stone) => stone.role === 'pave' || stone.role === 'eternity',
+  )
+
+  for (const stone of paveStones) {
+    const seat = layout.seats.find((candidate) => candidate.stoneId === stone.id)
+    const stoneRadius = Math.hypot(stone.center[0], stone.center[1])
+    const embeddedDepth =
+      outerRadius - (stoneRadius - stone.dimensions.pavilionDepth)
+    if (embeddedDepth < 0.3) {
+      results.push({
+        code: 'PAVE_EMBEDMENT',
+        severity: 'error',
+        title: 'Pierre pavée hors métal',
+        message: 'Le pavillon doit pénétrer le corps de bague avant la découpe de son assise.',
+        source: SOURCES.stuller,
+        entityIds: [stone.id],
+        measured: embeddedDepth,
+        required: 0.3,
+        unit: 'mm',
+      })
+    }
+    if (
+      !seat ||
+      seat.depthMm < stone.dimensions.pavilionDepth + 0.2 ||
+      seat.topRadiusMm < stone.dimensions.width * 0.44
+    ) {
+      results.push({
+        code: 'PAVE_BOOLEAN_SEAT',
+        severity: 'error',
+        title: 'Assise pavée absente',
+        message: 'Une cavité booléenne calibrée au pavillon est requise dans le métal.',
+        source: SOURCES.stuller,
+        entityIds: [stone.id, ...(seat ? [seat.id] : [])],
+      })
+    }
+  }
+  return results
+}
+
 export function validateDesign(layout: SemanticLayout): ValidationReport {
   const alloy = alloys[layout.metal]
   const results: RuleResult[] = []
@@ -279,6 +323,7 @@ export function validateDesign(layout: SemanticLayout): ValidationReport {
     ...validateGalleries(layout),
     ...validatePaveBorder(layout),
     ...validatePaveProngs(layout),
+    ...validatePaveSeats(layout),
   )
 
   const errors = results.filter((result) => result.severity === 'error').length

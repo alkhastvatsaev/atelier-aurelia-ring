@@ -46,6 +46,16 @@ export type LayoutBead = {
   angleDeg: 45 | 135 | 225 | 315
 }
 
+export type LayoutSeat = {
+  id: string
+  stoneId: string
+  center: Vec3Mm
+  rotation: Vec3Mm
+  depthMm: number
+  topRadiusMm: number
+  bottomRadiusMm: number
+}
+
 export type SemanticLayout = {
   config: RingConfig
   style: RingStyleId
@@ -63,6 +73,7 @@ export type SemanticLayout = {
   prongs: LayoutProng[]
   galleries: LayoutGallery[]
   beads: LayoutBead[]
+  seats: LayoutSeat[]
   resizable: boolean
   process: {
     linearShrinkage: number

@@ -29,6 +29,7 @@ export function buildSemanticLayout(config: RingConfig): SemanticLayout {
     prongs: recipe.prongs,
     galleries: recipe.galleries,
     beads: recipe.beads,
+    seats: recipe.seats,
     resizable: recipe.resizable,
     process: {
       linearShrinkage: alloy.casting.linearShrinkage,

@@ -26,6 +26,7 @@ Atelier Aurelia combines a minimal luxury retail interface with a millimetre-bas
 - EU/ISO ring-size conversion in millimetres
 - Yellow gold, rose gold, and platinum direct-casting profiles
 - Diamond, sapphire, and emerald density-aware dimension estimates
+- Four-grain pavé with pavilion seats subtracted from the metal by BVH/CSG
 - Structured pre-CAD validation for prongs, galleries, pavé borders, clearances, and casting allowances
 - On-demand technical report with measured values and source links
 - Versioned configuration migration, local persistence, URL sharing, and PNG export
