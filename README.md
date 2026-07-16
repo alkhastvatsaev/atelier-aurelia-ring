@@ -1,14 +1,10 @@
 # Atelier Aurelia
 
-A responsive, browser-based 3D ring configurator built as a product-focused
-frontend case study. It combines a polished jewellery retail experience with
-procedural Three.js geometry, typed configuration logic, persistence, sharing,
-and automated quality checks.
+A responsive, browser-based 3D ring configurator and jewellery pre-CAD engine built with React, TypeScript, and React Three Fiber.
 
 **[Open the live demo](https://atelier-aurelia-ring.vercel.app)**
 
-The customer-facing experience is intentionally in French; project
-documentation and source-level explanations are in English.
+The customer experience is in French. Technical documentation is in English.
 
 ![Atelier Aurelia ring configurator on desktop](docs/screenshots/configurator-desktop.png)
 
@@ -21,64 +17,51 @@ documentation and source-level explanations are in English.
 
 ## Product overview
 
-Atelier Aurelia explores the technical problems behind a made-to-order product
-configurator: keeping a real-time 3D scene responsive, translating product
-choices into valid geometry, and preserving a configuration without a backend.
-The result is a focused single-page experience rather than a complete commerce
-application.
+Atelier Aurelia combines a minimal luxury retail interface with a millimetre-based semantic geometry engine. It supports solitaire, halo, three-stone, and full-eternity architectures while checking setting, pavé, casting, and clearance rules against cited jewellery references.
 
 ### Features
 
-- Procedural, interactive 3D ring rendered without bundled model files
-- Yellow gold, rose gold, and platinum material options
-- Diamond, sapphire, and emerald stones in round, oval, and emerald cuts
-- Carat and French ring-size controls that update the geometry
-- Setting and pavé layout derived from stone dimensions, with collision checks
-- Live indicative pricing and optional engraving (up to 24 characters)
-- Automatic `localStorage` persistence and reset controls
-- Shareable configurations encoded in the URL
-- Client-side PNG export of the current WebGL canvas
-- Responsive controls, native keyboard interactions, status announcements, and
-  a simplified fallback when WebGL is unavailable
+- Procedural interactive 3D with separate round, oval, and emerald-cut geometry
+- Solitaire, halo, three-stone, and full-eternity style recipes
+- EU/ISO ring-size conversion in millimetres
+- Yellow gold, rose gold, and platinum direct-casting profiles
+- Diamond, sapphire, and emerald density-aware dimension estimates
+- Structured pre-CAD validation for prongs, galleries, pavé borders, clearances, and casting allowances
+- On-demand technical report with measured values and source links
+- Versioned configuration migration, local persistence, URL sharing, and PNG export
+- Responsive controls and a style-aware fallback when WebGL is unavailable
 
-The prices and rendered materials are illustrative. The continue action is a
-prototype interaction and does not create a reservation or order.
+Prices and materials are illustrative. The browser report is a pre-CAD check, not a manufacturing certificate or order workflow.
 
 ## Architecture
 
 ```text
+src/domain/
+├── configuration, units, alloys, casting profiles, gemstones
+src/styles/
+├── solitaire, halo, three-stone, eternity recipes
+src/geometry/
+├── semantic millimetre layout and design pipeline
+src/validation/
+├── structured CAP/GIA/Stuller/foundry rules
+src/rendering/three/
+├── meshes generated only from the validated layout
 App.tsx
-├── owns configuration and browser integrations
-├── renders the responsive product controls
-└── lazy-loads RingScene.tsx
-    ├── builds the ring from Three.js primitives
-    ├── applies physical materials and studio lighting
-    └── consumes jewelryLayout.ts
-        └── calculates dimensions, setting clearance, and pavé placement
-
-config.ts
-├── defines the typed product catalogue
-├── calculates indicative prices
-└── validates and serializes shareable configurations
+└── UI, persistence, sharing, report drawer, lazy 3D loading
 ```
 
-React owns the interface and state, while React Three Fiber provides the
-declarative bridge to Three.js. The 3D scene is split into a lazy chunk so the
-interface shell can load independently. Product state remains serializable,
-which keeps persistence and URL sharing independent from rendering.
+The pipeline is:
 
-The geometry is original and generated at runtime. The jewellery references and
-licensing decisions behind it are documented in
-[CAD_SOURCES.md](./CAD_SOURCES.md).
+`validated configuration → style recipe → semantic mm layout → validation report → Three.js adapter`
+
+The geometry is original and generated at runtime. Jewellery references, CAD models studied, licensing decisions, and limitations are documented in [CAD_SOURCES.md](./CAD_SOURCES.md).
 
 ## Technology
 
 - React 19 and TypeScript
 - Vite
 - Three.js, React Three Fiber, and Drei
-- Lucide React
-- Vitest
-- Oxlint
+- Vitest and Oxlint
 - GitHub Actions and Dependabot
 - Vercel
 
@@ -93,57 +76,37 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:5173`. The application has no environment variables,
-external API keys, database, or backend service.
+Open `http://localhost:5173`.
 
 ## Quality checks
 
 ```bash
-npm run lint       # static analysis
-npm run typecheck  # TypeScript project checks
-npm run test       # deterministic geometry and configuration tests
-npm run build      # production bundle
-npm run check      # all checks above
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+npm run check
 ```
 
-CI runs linting, type checking, tests, and a production build for pull requests
-and pushes to `main`. Dependabot proposes monthly npm and GitHub Actions
-updates.
+Tests cover configuration migration, ISO sizing, alloy-specific casting compensation, style reference structures, invalid geometry, and the supported style/cut/stone/size/carat grid.
 
 ## Engineering considerations
 
+### Manufacturing
+
+The engine classifies rules as universal principles, quality criteria, foundry profiles, or workshop thresholds. Foundry-specific shrinkage and finishing allowances remain explicit. A jeweller, setter, and foundry must validate the final piece.
+
 ### Accessibility
 
-The configuration controls use native buttons, inputs, labels, pressed states,
-and a live status region. A non-WebGL representation is available when canvas
-rendering is unsupported. The visual 3D interaction is still inherently
-limited for screen-reader users, and the project has not yet completed a formal
-WCAG audit or assistive-technology test matrix.
+Controls use native elements, labels, pressed states, and status announcements. A non-WebGL representation is available. A formal WCAG and assistive-technology audit remains future work.
 
 ### Performance
 
-The scene is lazy-loaded, device pixel ratio is capped, and geometry calculations
-are memoized. `preserveDrawingBuffer` is enabled to support PNG export and has a
-GPU-memory cost. Bundle budgets, real-user monitoring, and low-end device
-profiling are not yet in place.
+The scene is lazy-loaded, device pixel ratio is capped, and design calculations are memoized. `preserveDrawingBuffer` enables PNG export at a GPU-memory cost.
 
 ### Security and privacy
 
-All processing happens in the browser. Configuration data is stored locally or
-placed in a share URL; no personal data is submitted to a server. Shared and
-stored configuration values are treated as untrusted data and validated before
-use. This prototype has no authentication, payments, inventory, server-side
-pricing, or order workflow.
-
-## Roadmap
-
-- Add component-level interaction and accessibility tests
-- Replace indicative pricing with a typed server API and currency support
-- Add screenshot regression tests for key materials and cuts
-- Measure Core Web Vitals and define bundle/performance budgets
-- Add reduced-motion controls and complete a WCAG audit
-- Introduce a production checkout only alongside authentication, inventory,
-  server-side validation, and payment-provider controls
+All processing happens in the browser. Stored and shared configurations are treated as untrusted data, validated, and migrated before use. There is no authentication, payment, inventory, or backend.
 
 ## Licence
 

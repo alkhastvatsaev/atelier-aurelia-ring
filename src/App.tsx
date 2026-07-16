@@ -1,4 +1,13 @@
-import { ArrowUpRight, Check, Code2, Download, RotateCcw, Share2 } from 'lucide-react'
+import {
+  ArrowUpRight,
+  Check,
+  Code2,
+  Download,
+  Info,
+  RotateCcw,
+  Share2,
+  X,
+} from 'lucide-react'
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import './App.css'
 import {
@@ -6,12 +15,14 @@ import {
   decodeConfig,
   defaultConfig,
   encodeConfig,
+  migrateConfig,
   metals,
-  parseConfig,
   ringPrice,
+  ringStyles,
   stones,
   type RingConfig,
 } from './config'
+import { buildRingDesign } from './geometry/buildDesign'
 
 const RingScene = lazy(() =>
   import('./RingScene').then((module) => ({ default: module.RingScene })),
@@ -45,7 +56,7 @@ function initialConfig() {
 
   try {
     const saved = localStorage.getItem('atelier-ring')
-    return saved ? (parseConfig(JSON.parse(saved)) ?? defaultConfig) : defaultConfig
+    return saved ? migrateConfig(JSON.parse(saved)) : defaultConfig
   } catch {
     return defaultConfig
   }
@@ -64,7 +75,9 @@ export default function App() {
   const [config, setConfig] = useState<RingConfig>(initialConfig)
   const [webglAvailable] = useState(canUseWebGL)
   const [notice, setNotice] = useState('')
+  const [reportOpen, setReportOpen] = useState(false)
   const price = useMemo(() => ringPrice(config), [config])
+  const design = useMemo(() => buildRingDesign(config), [config])
   const update = <K extends keyof RingConfig>(key: K, value: RingConfig[K]) =>
     setConfig((current) => ({ ...current, [key]: value }))
 
@@ -122,7 +135,11 @@ export default function App() {
                 <RingScene config={config} />
               </Suspense>
             ) : (
-              <div className="static-ring" role="img" aria-label="Aperçu simplifié de la bague">
+              <div
+                className={`static-ring ${config.style}`}
+                role="img"
+                aria-label={`Aperçu simplifié — ${ringStyles[config.style].label}`}
+              >
                 <span style={{ borderColor: metals[config.metal].color }}>
                   <i
                     style={{
@@ -130,6 +147,8 @@ export default function App() {
                       borderColor: metals[config.metal].color,
                     }}
                   />
+                  <b style={{ background: stones[config.stone].color, borderColor: metals[config.metal].color }} />
+                  <em style={{ background: stones[config.stone].color, borderColor: metals[config.metal].color }} />
                 </span>
               </div>
             )}
@@ -149,6 +168,41 @@ export default function App() {
 
         <aside className="configurator">
           <h1 className="sr-only">Créez votre bague</h1>
+
+          <section className="control-group style-group">
+            <div className="section-title">
+              <h2>Architecture</h2>
+              <button
+                type="button"
+                className={`compliance ${design.report.status}`}
+                onClick={() => setReportOpen(true)}
+              >
+                <span />
+                {design.report.status === 'conform'
+                  ? 'Conforme'
+                  : design.report.status === 'review'
+                    ? 'À vérifier'
+                    : 'Impossible'}
+                <Info size={12} />
+              </button>
+            </div>
+            <div className="style-grid">
+              {Object.entries(ringStyles).map(([id, style]) => (
+                <button
+                  type="button"
+                  key={id}
+                  className={config.style === id ? 'active' : ''}
+                  onClick={() => update('style', id as RingConfig['style'])}
+                  aria-pressed={config.style === id}
+                >
+                  <span className={`style-silhouette ${id}`} aria-hidden="true">
+                    <i />
+                  </span>
+                  <span>{style.shortLabel}</span>
+                </button>
+              ))}
+            </div>
+          </section>
 
           <section className="control-group">
             <div className="section-title"><h2>Métal</h2></div>
@@ -224,7 +278,12 @@ export default function App() {
 
           <div className="summary">
             <div><span>Total</span><strong>{price.toLocaleString('fr-FR')} €</strong></div>
-            <button type="button" className="primary" onClick={() => flash('Votre création est réservée')}>
+            <button
+              type="button"
+              className="primary"
+              disabled={design.report.status === 'impossible'}
+              onClick={() => flash('Votre création est réservée')}
+            >
               CONTINUER <ArrowUpRight size={16} />
             </button>
             <button
@@ -239,6 +298,56 @@ export default function App() {
           </div>
         </aside>
       </section>
+
+      <div
+        className={`report-backdrop ${reportOpen ? 'visible' : ''}`}
+        onClick={() => setReportOpen(false)}
+        aria-hidden={!reportOpen}
+      />
+      <aside className={`technical-report ${reportOpen ? 'open' : ''}`} aria-hidden={!reportOpen}>
+        <div className="report-header">
+          <div>
+            <span>PRÉ-CAO · MM</span>
+            <h2>Contrôle de fabrication</h2>
+          </div>
+          <button type="button" onClick={() => setReportOpen(false)} aria-label="Fermer le rapport">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="report-metrics">
+          <div><span>Taille intérieure</span><b>{(design.layout.shank.innerRadiusMm * 2).toFixed(2)} mm</b></div>
+          <div><span>Corps fini</span><b>{design.layout.shank.radialThicknessMm.toFixed(2)} mm</b></div>
+          <div><span>Retrait fonte</span><b>{(design.layout.process.linearShrinkage * 100).toFixed(1)} %</b></div>
+          <div><span>Surcote finition</span><b>{design.layout.process.finishingAllowanceMm.toFixed(2)} mm</b></div>
+        </div>
+        <div className="report-results">
+          {design.report.results.length === 0 ? (
+            <p className="report-empty">Aucune non-conformité calculée.</p>
+          ) : (
+            design.report.results.map((result, index) => (
+              <a
+                key={`${result.code}-${index}`}
+                className={`report-item ${result.severity}`}
+                href={result.source}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span>{result.code}</span>
+                <strong>{result.title}</strong>
+                <p>{result.message}</p>
+                {result.measured !== undefined && (
+                  <small>
+                    Mesuré {result.measured.toFixed(2)} {result.unit === 'degrees' ? '°' : result.unit === 'ratio' ? '' : 'mm'}
+                  </small>
+                )}
+              </a>
+            ))
+          )}
+        </div>
+        <p className="report-disclaimer">
+          Contrôle géométrique indicatif. Validation finale obligatoire par le joaillier, le sertisseur et le fondeur.
+        </p>
+      </aside>
 
       <div className={`toast ${notice ? 'visible' : ''}`} role="status">{notice}</div>
     </main>
