@@ -7,6 +7,7 @@ Configurateur de bague 3D open source construit avec React, TypeScript et React 
 - Rendu 3D procédural et interactif, sans modèle externe
 - Choix du métal, de la pierre, de la taille et du poids en carats
 - Gravure personnalisée visible sur l’anneau
+- Moteur de contraintes empêchant les collisions pierre, pavage et métal
 - Estimation de prix instantanée
 - Sauvegarde locale automatique
 - Liens de configuration partageables

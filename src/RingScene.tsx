@@ -10,6 +10,7 @@ import { useMemo } from 'react'
 import * as THREE from 'three'
 import type { CutId, RingConfig } from './config'
 import { metals, stones } from './config'
+import { calculateJewelryLayout } from './jewelryLayout'
 
 function createBrilliantGeometry(segments = 16) {
   const vertices: number[] = []
@@ -147,10 +148,12 @@ function Basket({
   y,
   color,
   scale,
+  prongCount,
 }: {
   y: number
   color: string
   scale: number
+  prongCount: number
 }) {
   return (
     <group position={[0, y, 0]} scale={scale}>
@@ -159,8 +162,8 @@ function Basket({
         <MetalMaterial color={color} />
       </mesh>
 
-      {Array.from({ length: 6 }, (_, index) => {
-        const angle = (index / 6) * Math.PI * 2
+      {Array.from({ length: prongCount }, (_, index) => {
+        const angle = Math.PI / 4 + (index / prongCount) * Math.PI * 2
         const x = Math.cos(angle)
         const z = Math.sin(angle)
         return (
@@ -229,39 +232,45 @@ function PaveStone({
 function JewelryRing({ config }: { config: RingConfig }) {
   const metal = metals[config.metal]
   const stone = stones[config.stone]
-  const ringRadius = 1.14 + (config.size - 50) * 0.011
-  const stoneScale = 0.77 + config.carats * 0.085
-  const topY = ringRadius + 0.24
-  const paveAngles = [
-    0.56, 0.69, 0.82, 0.95, 1.08, 1.21,
-    Math.PI - 1.21, Math.PI - 1.08, Math.PI - 0.95,
-    Math.PI - 0.82, Math.PI - 0.69, Math.PI - 0.56,
-  ]
+  const layout = useMemo(() => calculateJewelryLayout(config), [config])
 
   return (
     <Float speed={0.8} rotationIntensity={0.025} floatIntensity={0.055}>
-      <group rotation={[0.48, -0.24, -0.055]} position={[0, -0.18, 0]} scale={0.96}>
+      <group
+        rotation={[0.48, -0.24, -0.055]}
+        position={[0, -0.18, 0]}
+        scale={0.96}
+        userData={{
+          collisionFree: layout.collisions.length === 0,
+          collisions: layout.collisions,
+        }}
+      >
         <mesh castShadow receiveShadow>
-          <torusGeometry args={[ringRadius, 0.145, 40, 180]} />
+          <torusGeometry args={[layout.ringRadius, layout.ringTube, 40, 180]} />
           <MetalMaterial color={metal.color} platinum={config.metal === 'platinum'} />
         </mesh>
 
-        <mesh position={[0, ringRadius + 0.03, 0]} scale={[1, 0.45, 1.15]} castShadow>
+        <mesh position={[0, layout.ringRadius + 0.03, 0]} scale={[1, 0.45, 1.15]} castShadow>
           <sphereGeometry args={[0.31, 32, 24]} />
           <MetalMaterial color={metal.color} platinum={config.metal === 'platinum'} />
         </mesh>
 
-        {paveAngles.map((angle) => (
+        {layout.paveAngles.map((angle) => (
           <PaveStone
             key={angle}
             angle={angle}
-            radius={ringRadius + 0.145}
+            radius={layout.paveOrbitRadius}
             metalColor={metal.color}
           />
         ))}
 
-        <Basket y={topY} color={metal.color} scale={stoneScale} />
-        <group position={[0, topY + 0.15 * stoneScale, 0]} scale={stoneScale}>
+        <Basket
+          y={layout.basketY}
+          color={metal.color}
+          scale={layout.basketScale}
+          prongCount={layout.prongCount}
+        />
+        <group position={[0, layout.centerY, 0]} scale={layout.centerScale}>
           <CutGem cut={config.cut} color={stone.color} />
         </group>
       </group>
