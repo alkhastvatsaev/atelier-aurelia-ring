@@ -10,6 +10,15 @@ and automated quality checks.
 The customer-facing experience is intentionally in French; project
 documentation and source-level explanations are in English.
 
+![Atelier Aurelia ring configurator on desktop](docs/screenshots/configurator-desktop.png)
+
+<details>
+<summary>Mobile view</summary>
+
+![Atelier Aurelia ring configurator on mobile](docs/screenshots/configurator-mobile.png)
+
+</details>
+
 ## Product overview
 
 Atelier Aurelia explores the technical problems behind a made-to-order product
