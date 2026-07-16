@@ -338,7 +338,7 @@ export default function App() {
                 <p>{result.message}</p>
                 {result.measured !== undefined && (
                   <small>
-                    Mesuré {result.measured.toFixed(2)} {result.unit === 'degrees' ? '°' : result.unit === 'ratio' ? '' : 'mm'}
+                    Mesuré {result.measured.toFixed(2)} {result.unit === 'degrees' ? '°' : result.unit === 'mm' ? 'mm' : ''}
                   </small>
                 )}
               </a>

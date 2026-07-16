@@ -90,6 +90,37 @@ function stoneSetting(
   }
 }
 
+function fourPaveProngs(
+  stone: LayoutStone,
+  radialAngle: number,
+): LayoutBead[] {
+  const diameterMm = 0.5
+  const offset = stone.dimensions.width * 0.475
+  const radialLift = stone.dimensions.crownHeight * 0.28
+  const radialX = Math.cos(radialAngle)
+  const radialY = Math.sin(radialAngle)
+  const tangentX = -radialY
+  const tangentY = radialX
+  const angles = [45, 135, 225, 315] as const
+
+  return angles.map((angleDeg) => {
+    const angle = (angleDeg * Math.PI) / 180
+    const tangentOffset = Math.cos(angle) * offset
+    const axialOffset = Math.sin(angle) * offset
+    return {
+      id: `${stone.id}-prong-${angleDeg}`,
+      stoneId: stone.id,
+      center: [
+        stone.center[0] + radialX * radialLift + tangentX * tangentOffset,
+        stone.center[1] + radialY * radialLift + tangentY * tangentOffset,
+        stone.center[2] + axialOffset,
+      ],
+      diameterMm,
+      angleDeg,
+    }
+  })
+}
+
 function makePaveShoulders(
   outerRadius: number,
   exclusionHalfAngle: number,
@@ -113,7 +144,7 @@ function makePaveShoulders(
         Math.sin(mirrored) * orbit,
         0,
       ]
-      stones.push({
+      const stone: LayoutStone = {
         id: `pave-${index}`,
         role: 'pave',
         stone: 'diamond',
@@ -121,16 +152,9 @@ function makePaveShoulders(
         dimensions,
         center,
         rotation: [0, 0, mirrored - Math.PI / 2],
-      })
-      beads.push({
-        id: `pave-bead-${index}`,
-        center: [
-          center[0] + Math.cos(mirrored) * 0.04,
-          center[1] + Math.sin(mirrored) * 0.04,
-          dimensions.width / 2 + 0.18,
-        ],
-        diameterMm: 0.45,
-      })
+      }
+      stones.push(stone)
+      beads.push(...fourPaveProngs(stone, mirrored))
       index += 1
     }
   }
@@ -266,11 +290,9 @@ function eternityRecipe({ config, innerRadiusMm }: RecipeContext): StyleGeometry
       rotation: [0, 0, angle - Math.PI / 2],
     }
   })
-  const beads = stones.map((stone, index): LayoutBead => ({
-    id: `eternity-bead-${index}`,
-    center: [stone.center[0], stone.center[1], dimensions.width / 2 + 0.18],
-    diameterMm: 0.45,
-  }))
+  const beads = stones.flatMap((stone, index) =>
+    fourPaveProngs(stone, (index / count) * Math.PI * 2),
+  )
   return {
     stones,
     prongs: [],

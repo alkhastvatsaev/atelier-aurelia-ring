@@ -71,6 +71,22 @@ describe('millimeter jewelry engine', () => {
     expect(eternity.layout.stones.every((stone) => stone.role === 'eternity')).toBe(true)
     expect(eternity.layout.resizable).toBe(false)
     expect(eternity.layout.shank.sizeBarDegrees).toBe(0)
+
+    for (const design of [solitaire, eternity]) {
+      const paveStones = design.layout.stones.filter(
+        (stone) => stone.role === 'pave' || stone.role === 'eternity',
+      )
+      for (const stone of paveStones) {
+        const prongs = design.layout.beads.filter((bead) => bead.stoneId === stone.id)
+        expect(prongs).toHaveLength(4)
+        expect(prongs.map((prong) => prong.angleDeg).sort((a, b) => a - b)).toEqual([
+          45,
+          135,
+          225,
+          315,
+        ])
+      }
+    }
   })
 
   it('keeps the supported configuration grid free of hard errors', () => {
@@ -104,12 +120,14 @@ describe('millimeter jewelry engine', () => {
     invalid.prongs[0].diameterMm = 0.3
     invalid.prongs[0].end[0] += 10
     invalid.stones[1].center = [...invalid.stones[0].center]
+    invalid.beads = invalid.beads.slice(1)
     const report = validateDesign(invalid)
 
     expect(report.status).toBe('impossible')
     expect(report.results.some((result) => result.code === 'PRONG_DIAMETER')).toBe(true)
     expect(report.results.some((result) => result.code === 'PRONG_ANGLE')).toBe(true)
     expect(report.results.some((result) => result.code === 'STONE_CLEARANCE')).toBe(true)
+    expect(report.results.some((result) => result.code === 'PAVE_FOUR_PRONGS')).toBe(true)
   })
 
   it('adds alloy-specific shrinkage and finishing allowance', () => {

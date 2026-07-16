@@ -9,7 +9,7 @@ export type RuleResult = {
   entityIds: string[]
   measured?: number
   required?: number | [number, number]
-  unit?: 'mm' | 'degrees' | 'ratio'
+  unit?: 'mm' | 'degrees' | 'ratio' | 'count'
 }
 
 export type ValidationReport = {

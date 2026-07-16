@@ -174,6 +174,36 @@ function validatePaveBorder(layout: SemanticLayout): RuleResult[] {
   ]
 }
 
+function validatePaveProngs(layout: SemanticLayout): RuleResult[] {
+  const results: RuleResult[] = []
+  const requiredAngles = [45, 135, 225, 315]
+  const paveStones = layout.stones.filter(
+    (stone) => stone.role === 'pave' || stone.role === 'eternity',
+  )
+
+  for (const stone of paveStones) {
+    const prongs = layout.beads.filter((bead) => bead.stoneId === stone.id)
+    const angles = prongs.map((prong) => prong.angleDeg).sort((a, b) => a - b)
+    if (
+      prongs.length !== 4 ||
+      angles.some((angle, index) => angle !== requiredAngles[index])
+    ) {
+      results.push({
+        code: 'PAVE_FOUR_PRONGS',
+        severity: 'error',
+        title: 'Serti pavé incomplet',
+        message: 'Chaque pierre pavée doit recevoir quatre grains orientés à 45°.',
+        source: SOURCES.stuller,
+        entityIds: [stone.id, ...prongs.map((prong) => prong.id)],
+        measured: prongs.length,
+        required: 4,
+        unit: 'count',
+      })
+    }
+  }
+  return results
+}
+
 export function validateDesign(layout: SemanticLayout): ValidationReport {
   const alloy = alloys[layout.metal]
   const results: RuleResult[] = []
@@ -248,6 +278,7 @@ export function validateDesign(layout: SemanticLayout): ValidationReport {
     ...validateProngs(layout),
     ...validateGalleries(layout),
     ...validatePaveBorder(layout),
+    ...validatePaveProngs(layout),
   )
 
   const errors = results.filter((result) => result.severity === 'error').length

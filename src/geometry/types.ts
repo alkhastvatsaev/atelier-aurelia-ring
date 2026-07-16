@@ -40,8 +40,10 @@ export type LayoutGallery = {
 
 export type LayoutBead = {
   id: string
+  stoneId: string
   center: Vec3Mm
   diameterMm: number
+  angleDeg: 45 | 135 | 225 | 315
 }
 
 export type SemanticLayout = {
