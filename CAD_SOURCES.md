@@ -20,6 +20,14 @@ CGTrader's Royalty Free licence does not permit redistribution of source assets 
 - [Morris & Watson — CAD Design Guidelines](https://www.morrisandwatson.com/casting/cad-design-guidelines) — direct-casting shrinkage, minimum details, openings, and finishing loss.
 - [ISO 8653:2016](https://www.iso.org/standard/65408.html) — ring-size definition, measurement, and designation. Only the public summary was consulted.
 
+## Facet models
+
+- Round brilliant: 58 logical facets including the culet — table, 8 stars, 8 bezels, 16 upper-girdle facets, 16 lower-girdle facets, 8 pavilion mains, and culet.
+- Oval: a 58-facet modified brilliant topology adapted to an elliptical outline. Real oval arrangements commonly vary from 56 to 58 facets.
+- Emerald cut: one common 57-facet step arrangement — 25 crown facets, 8 girdle facets, and 24 pavilion facets. Real stones can vary because cutters change the number of step rows.
+
+Facet count describes topology, not cut quality. Light return also depends on angles, symmetry, polish, refractive index, inclusions, and the rough stone. GIA does not assign an overall cut grade to fancy shapes such as oval and emerald cuts.
+
 ## How rules are used
 
 The engine classifies every check as one of:

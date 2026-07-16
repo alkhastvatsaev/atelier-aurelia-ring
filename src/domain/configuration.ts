@@ -2,10 +2,10 @@ import { alloys } from './materials'
 import { gemstones } from './gemstones'
 import type { CutId, RingConfig, RingStyleId, StoneId } from './types'
 
-export const cuts: Record<CutId, { label: string; multiplier: number }> = {
-  round: { label: 'Brillant', multiplier: 1 },
-  oval: { label: 'Ovale', multiplier: 1.08 },
-  emerald: { label: 'Émeraude', multiplier: 1.12 },
+export const cuts: Record<CutId, { label: string; multiplier: number; facets: number }> = {
+  round: { label: 'Brillant', multiplier: 1, facets: 58 },
+  oval: { label: 'Ovale', multiplier: 1.08, facets: 58 },
+  emerald: { label: 'Émeraude', multiplier: 1.12, facets: 57 },
 }
 
 export const ringStyles: Record<RingStyleId, { label: string; shortLabel: string }> = {

@@ -319,6 +319,7 @@ export default function App() {
           <div><span>Corps fini</span><b>{design.layout.shank.radialThicknessMm.toFixed(2)} mm</b></div>
           <div><span>Retrait fonte</span><b>{(design.layout.process.linearShrinkage * 100).toFixed(1)} %</b></div>
           <div><span>Surcote finition</span><b>{design.layout.process.finishingAllowanceMm.toFixed(2)} mm</b></div>
+          <div><span>Facettage</span><b>{cuts[config.cut].facets} facettes</b></div>
         </div>
         <div className="report-results">
           {design.report.results.length === 0 ? (
