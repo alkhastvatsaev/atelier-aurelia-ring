@@ -1,5 +1,14 @@
+# Dependencies
+node_modules/
+
+# Build and test output
+dist/
+dist-ssr/
+coverage/
+*.tsbuildinfo
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,20 +16,24 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Environment and local overrides
+.env
+.env.*
+!.env.example
 *.local
 
-# Editor directories and files
+# Deployment and tool state
+.vercel/
+.gstack/
+.cache/
+
+# Editors and operating systems
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.vercel
-.gstack/

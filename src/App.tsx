@@ -7,6 +7,7 @@ import {
   defaultConfig,
   encodeConfig,
   metals,
+  parseConfig,
   ringPrice,
   stones,
   type RingConfig,
@@ -44,7 +45,7 @@ function initialConfig() {
 
   try {
     const saved = localStorage.getItem('atelier-ring')
-    return saved ? ({ ...defaultConfig, ...JSON.parse(saved) } as RingConfig) : defaultConfig
+    return saved ? (parseConfig(JSON.parse(saved)) ?? defaultConfig) : defaultConfig
   } catch {
     return defaultConfig
   }

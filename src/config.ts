@@ -38,6 +38,34 @@ export const defaultConfig: RingConfig = {
   size: 54,
 }
 
+const ringSizes = [48, 50, 52, 54, 56, 58, 60, 62]
+
+function isRingConfig(value: unknown): value is RingConfig {
+  if (!value || typeof value !== 'object') return false
+
+  const config = value as Partial<RingConfig>
+  return (
+    typeof config.metal === 'string' &&
+    config.metal in metals &&
+    typeof config.stone === 'string' &&
+    config.stone in stones &&
+    typeof config.cut === 'string' &&
+    config.cut in cuts &&
+    typeof config.carats === 'number' &&
+    Number.isFinite(config.carats) &&
+    config.carats >= 0.5 &&
+    config.carats <= 3 &&
+    typeof config.size === 'number' &&
+    ringSizes.includes(config.size) &&
+    typeof config.engraving === 'string'
+  )
+}
+
+export function parseConfig(value: unknown): RingConfig | null {
+  if (!isRingConfig(value)) return null
+  return { ...value, engraving: value.engraving.slice(0, 24) }
+}
+
 export function ringPrice(config: RingConfig) {
   const stonePrice = stones[config.stone].price * config.carats * cuts[config.cut].multiplier
   const engravingPrice = config.engraving.trim() ? 90 : 0
@@ -52,20 +80,7 @@ export function decodeConfig(value: string | null): RingConfig | null {
   if (!value) return null
 
   try {
-    const parsed = JSON.parse(decodeURIComponent(atob(value))) as Partial<RingConfig>
-    if (
-      !parsed.metal || !(parsed.metal in metals) ||
-      !parsed.stone || !(parsed.stone in stones) ||
-      !parsed.cut || !(parsed.cut in cuts) ||
-      typeof parsed.carats !== 'number' ||
-      parsed.carats < 0.5 || parsed.carats > 3 ||
-      typeof parsed.size !== 'number' ||
-      parsed.size < 48 || parsed.size > 62 ||
-      typeof parsed.engraving !== 'string'
-    ) {
-      return null
-    }
-    return { ...defaultConfig, ...parsed, engraving: parsed.engraving.slice(0, 24) }
+    return parseConfig(JSON.parse(decodeURIComponent(atob(value))))
   } catch {
     return null
   }

@@ -2,14 +2,19 @@
   "name": "atelier-aurelia-ring",
   "private": true,
   "version": "1.0.0",
-  "description": "Configurateur de bague 3D open source en React Three Fiber",
+  "description": "Interactive 3D ring configurator built with React, TypeScript, and React Three Fiber",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=20.19"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build",
     "preview": "vite preview"
   },
   "dependencies": {

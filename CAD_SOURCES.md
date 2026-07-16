@@ -1,16 +1,31 @@
-# Références CAD joaillerie
+# Jewellery CAD references
 
-Le modèle affiché par Atelier Aurelia est généré dans le navigateur. Il reprend une construction joaillière réelle : anneau confort, épaules pavées, grains de sertissage, galerie, panier à six griffes et pierre centrale facettée.
+Atelier Aurelia generates its model in the browser. Its construction is based
+on common fine-jewellery elements: a comfort-fit band, pavé shoulders, setting
+beads, gallery, prong basket, and faceted centre stone.
 
-## Modèles étudiés
+## References studied
 
-- [Solitar diamond ring — crc396369](https://sketchfab.com/3d-models/solitar-diamond-ring-aed4bca070e64d729b57d2ebae0344c3) — STL, OBJ et 3DM, licence CC BY 4.0.
-- [Multi Stone Ring — Mariblueruby](https://www.thingiverse.com/thing:338040) — STL, licence CC BY-ND.
-- [Ring creation script — M_G](https://www.thingiverse.com/thing:12448) — OpenSCAD paramétrique, licence CC BY-SA.
-- [Solitaire Engagement Ring](https://www.cgtrader.com/free-3d-print-models/jewelry/ring/solitaire-engagement-ring-de958f3c-56f5-499f-bb4e-629037022b51) — RhinoGold, STL/OBJ/3DM.
+- [Solitar diamond ring — crc396369](https://sketchfab.com/3d-models/solitar-diamond-ring-aed4bca070e64d729b57d2ebae0344c3)
+  — STL, OBJ, and 3DM; CC BY 4.0.
+- [Multi Stone Ring — Mariblueruby](https://www.thingiverse.com/thing:338040)
+  — STL; CC BY-ND.
+- [Ring creation script — M_G](https://www.thingiverse.com/thing:12448)
+  — parametric OpenSCAD; CC BY-SA.
+- [Solitaire Engagement Ring](https://www.cgtrader.com/free-3d-print-models/jewelry/ring/solitaire-engagement-ring-de958f3c-56f5-499f-bb4e-629037022b51)
+  — RhinoGold, STL, OBJ, and 3DM.
 
-## Pourquoi ces fichiers ne sont pas inclus
+## Why these files are not included
 
-Les modèles CGTrader utilisent une licence « Royalty Free » qui autorise leur emploi dans un rendu mais pas la redistribution du fichier source dans un dépôt open source. Sketchfab et Thingiverse imposent un téléchargement authentifié ou des conditions d’attribution spécifiques.
+CGTrader's Royalty Free licence permits use in a rendered work but does not
+permit redistribution of the source asset in an open-source repository.
+Sketchfab and Thingiverse downloads also require authentication or carry
+specific attribution and redistribution terms.
 
-Le projet conserve donc une géométrie originale et paramétrique. Cela permet de modifier en temps réel la taille de l’anneau, le poids et la forme de la pierre sans enfreindre les licences des fichiers étudiés.
+The application therefore uses original parametric geometry implemented with
+Three.js primitives. This also allows ring size, stone weight, cut, setting,
+and pavé placement to update in real time without redistributing third-party
+model files.
+
+These references informed domain research only. No third-party geometry or
+texture is bundled in the application.
