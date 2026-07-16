@@ -13,6 +13,8 @@ Configurateur de bague 3D open source construit avec React, TypeScript et React 
 - Export PNG de la création
 - Interface responsive et accessible au clavier
 
+La construction 3D suit une architecture de joaillerie réelle. Les modèles CAD étudiés et les choix de licence sont documentés dans [CAD_SOURCES.md](./CAD_SOURCES.md).
+
 ## Démarrage
 
 ```bash
