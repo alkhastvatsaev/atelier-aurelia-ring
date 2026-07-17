@@ -154,7 +154,7 @@ export default function App() {
             )}
           </div>
           <div className="viewer-tools">
-            <span className="drag-hint">360°</span>
+            <span className="drag-hint">VUE 3D</span>
             <div>
               <button type="button" className="icon-button" onClick={download} aria-label="Télécharger une image">
                 <Download size={18} />

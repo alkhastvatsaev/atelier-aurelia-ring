@@ -107,10 +107,10 @@ export function RingPreview({ design }: { design: RingDesign }) {
   const alloy = alloys[layout.metal]
 
   return (
-    <Float speed={0.75} rotationIntensity={0.02} floatIntensity={0.05}>
+    <Float speed={0.75} rotationIntensity={0} floatIntensity={0.025}>
       <group
         scale={WORLD_PER_MM}
-        rotation={[0.5, 0, 0]}
+        rotation={[0, 0, 0]}
         position={[0, -0.18, 0]}
       >
         <BooleanShank layout={layout} color={alloy.color} />
