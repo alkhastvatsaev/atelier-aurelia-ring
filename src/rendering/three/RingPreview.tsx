@@ -1,4 +1,4 @@
-import { Float } from '@react-three/drei'
+import { Caustics, Float } from '@react-three/drei'
 import { useMemo } from 'react'
 import * as THREE from 'three'
 import { gemstones } from '../../domain/gemstones'
@@ -7,11 +7,21 @@ import type { LayoutGallery, LayoutProng, LayoutStone, Vec3Mm } from '../../geom
 import type { RingDesign } from '../../geometry/buildDesign'
 import { BooleanShank } from './BooleanShank'
 import { createGemGeometry } from './gemGeometries'
-import { GemMaterial, MetalMaterial } from './materials'
+import {
+  GemMaterial,
+  GemRefractionMaterial,
+  MetalMaterial,
+} from './materials'
 
 const WORLD_PER_MM = 0.12
 
-function Gem({ stone }: { stone: LayoutStone }) {
+function GemMesh({
+  stone,
+  position,
+}: {
+  stone: LayoutStone
+  position: Vec3Mm
+}) {
   const geometry = useMemo(
     () => createGemGeometry(stone.cut, stone.dimensions),
     [stone.cut, stone.dimensions],
@@ -19,15 +29,48 @@ function Gem({ stone }: { stone: LayoutStone }) {
   return (
     <mesh
       geometry={geometry}
-      position={stone.center}
+      position={position}
       rotation={stone.rotation}
       castShadow
     >
-      <GemMaterial
-        color={gemstones[stone.stone].color}
-        small={stone.role !== 'center' && stone.role !== 'side'}
-      />
+      {stone.role === 'center' || stone.role === 'side' ? (
+        <GemRefractionMaterial stone={stone.stone} />
+      ) : (
+        <GemMaterial stone={stone.stone} small />
+      )}
     </mesh>
+  )
+}
+
+function Gem({ stone }: { stone: LayoutStone }) {
+  if (stone.role !== 'center') {
+    return <GemMesh stone={stone} position={stone.center} />
+  }
+
+  const projectionY =
+    stone.center[1] - stone.dimensions.pavilionDepth - 0.5
+  const localStonePosition: Vec3Mm = [
+    0,
+    stone.center[1] - projectionY,
+    0,
+  ]
+
+  return (
+    <Caustics
+      position={[stone.center[0], projectionY, stone.center[2]]}
+      frames={1}
+      causticsOnly={false}
+      backside
+      ior={gemstones[stone.stone].ior}
+      backsideIOR={1}
+      worldRadius={0.025}
+      intensity={0.065}
+      resolution={256}
+      lightSource={[3.5, 5.5, 4.5]}
+      color={gemstones[stone.stone].color}
+    >
+      <GemMesh stone={stone} position={localStonePosition} />
+    </Caustics>
   )
 }
 

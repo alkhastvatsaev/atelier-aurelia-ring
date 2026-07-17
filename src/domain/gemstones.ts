@@ -1,9 +1,33 @@
 import type { CutId, StoneDimensionsMm, StoneId } from './types'
 
 export const gemstones = {
-  diamond: { label: 'Diamant', color: '#f3fbff', density: 3.52, price: 1950 },
-  sapphire: { label: 'Saphir bleu', color: '#174ca3', density: 4, price: 1150 },
-  emerald: { label: 'Émeraude', color: '#087b57', density: 2.76, price: 1320 },
+  diamond: {
+    label: 'Diamant',
+    color: '#f3fbff',
+    density: 3.52,
+    price: 1950,
+    ior: 2.417,
+    dispersion: 0.044,
+    abbe: 55,
+  },
+  sapphire: {
+    label: 'Saphir bleu',
+    color: '#174ca3',
+    density: 4,
+    price: 1150,
+    ior: 1.77,
+    dispersion: 0.018,
+    abbe: 72,
+  },
+  emerald: {
+    label: 'Émeraude',
+    color: '#087b57',
+    density: 2.76,
+    price: 1320,
+    ior: 1.58,
+    dispersion: 0.014,
+    abbe: 80,
+  },
 } as const
 
 const ONE_CARAT: Record<CutId, StoneDimensionsMm> = {

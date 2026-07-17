@@ -1,9 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { estimateStoneDimensions } from '../../domain/gemstones'
+import { estimateStoneDimensions, gemstones } from '../../domain/gemstones'
 import type { CutId } from '../../domain/types'
 import { createGemGeometry, FACET_SPECIFICATIONS } from './gemGeometries'
 
 describe('gemological faceting', () => {
+  it('uses physical diamond optical constants', () => {
+    expect(gemstones.diamond.ior).toBeCloseTo(2.417, 3)
+    expect(gemstones.diamond.dispersion).toBeCloseTo(0.044, 3)
+    expect(gemstones.diamond.abbe).toBe(55)
+  })
+
   it.each([
     ['round', 58],
     ['oval', 58],

@@ -32,6 +32,16 @@ CGTrader's Royalty Free licence does not permit redistribution of source assets 
 
 Facet count describes topology, not cut quality. Light return also depends on angles, symmetry, polish, refractive index, inclusions, and the rough stone. GIA does not assign an overall cut grade to fancy shapes such as oval and emerald cuts.
 
+## Optical rendering
+
+- Diamond uses IOR 2.417, dispersion 0.044, and Abbe number 55.
+- Sapphire uses IOR 1.77 and dispersion 0.018; emerald uses IOR 1.58 and dispersion 0.014.
+- Main stones use a BVH ray shader with four internal bounces, Fresnel reflection, chromatic aberration, and total-internal-reflection paths.
+- Pavé stones use Three.js `MeshPhysicalMaterial` transmission and dispersion for a lower GPU cost.
+- A low-resolution, one-frame caustic projection is placed on the setting below the centre stone.
+
+This remains a real-time raster approximation. It does not replace spectral path tracing: absorption, birefringence, inclusions, polish, exact wavelength-dependent IOR, and unlimited internal bounces are not simulated.
+
 ## How rules are used
 
 The engine classifies every check as one of:

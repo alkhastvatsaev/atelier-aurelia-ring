@@ -1,4 +1,7 @@
+import { MeshRefractionMaterial, useEnvironment } from '@react-three/drei'
 import * as THREE from 'three'
+import { gemstones } from '../../domain/gemstones'
+import type { StoneId } from '../../domain/types'
 
 export function MetalMaterial({
   color,
@@ -19,26 +22,46 @@ export function MetalMaterial({
 }
 
 export function GemMaterial({
-  color,
+  stone,
   small = false,
 }: {
-  color: string
+  stone: StoneId
   small?: boolean
 }) {
+  const optics = gemstones[stone]
   return (
     <meshPhysicalMaterial
-      color={color}
-      roughness={0.025}
+      color={optics.color}
+      roughness={0.015}
       metalness={0}
-      transmission={small ? 0.72 : 0.9}
-      thickness={small ? 0.35 : 0.9}
-      ior={2.42}
+      transmission={small ? 0.88 : 0.96}
+      thickness={small ? 0.22 : 0.9}
+      ior={optics.ior}
+      dispersion={optics.dispersion}
       envMapIntensity={2.1}
-      clearcoat={0.35}
-      clearcoatRoughness={0.03}
-      attenuationColor={color}
-      attenuationDistance={small ? 0.5 : 1.4}
+      clearcoat={0.12}
+      clearcoatRoughness={0.015}
+      attenuationColor={optics.color}
+      attenuationDistance={small ? 0.65 : 1.6}
       side={THREE.DoubleSide}
+    />
+  )
+}
+
+export function GemRefractionMaterial({ stone }: { stone: StoneId }) {
+  const envMap = useEnvironment({ files: '/hdri/studio_small_09_1k.hdr' })
+  const optics = gemstones[stone]
+
+  return (
+    <MeshRefractionMaterial
+      envMap={envMap}
+      color={optics.color}
+      ior={optics.ior}
+      bounces={4}
+      fresnel={1}
+      aberrationStrength={optics.dispersion}
+      fastChroma={false}
+      toneMapped={false}
     />
   )
 }
