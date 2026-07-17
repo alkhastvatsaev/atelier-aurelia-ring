@@ -60,10 +60,6 @@ export function RingScene({ config }: { config: RingConfig }) {
         target={[0, 0, 0]}
         minDistance={4.3}
         maxDistance={7.2}
-        minAzimuthAngle={-Math.PI / 9}
-        maxAzimuthAngle={Math.PI / 9}
-        minPolarAngle={Math.PI / 2 - 0.2}
-        maxPolarAngle={Math.PI / 2 + 0.2}
         enableDamping
         dampingFactor={0.08}
       />
