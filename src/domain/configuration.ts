@@ -9,10 +9,8 @@ export const cuts: Record<CutId, { label: string; multiplier: number; facets: nu
 }
 
 export const ringStyles: Record<RingStyleId, { label: string; shortLabel: string }> = {
-  solitaire: { label: 'Solitaire pavé', shortLabel: 'Solitaire' },
-  halo: { label: 'Halo', shortLabel: 'Halo' },
-  'three-stone': { label: 'Trois pierres', shortLabel: 'Trilogie' },
-  eternity: { label: 'Alliance tour complet', shortLabel: 'Éternité' },
+  solitaire: { label: 'Solitaire rivière', shortLabel: 'Solitaire' },
+  eternity: { label: 'Alliance rivière tour complet', shortLabel: 'Rivière' },
 }
 
 export const defaultConfig: RingConfig = {
@@ -20,7 +18,7 @@ export const defaultConfig: RingConfig = {
   style: 'solitaire',
   metal: 'yellow-gold',
   stone: 'diamond',
-  cut: 'oval',
+  cut: 'round',
   carats: 1.2,
   engraving: 'À TOI, TOUJOURS',
   size: 54,
@@ -29,8 +27,7 @@ export const defaultConfig: RingConfig = {
 export function ringPrice(config: RingConfig) {
   const stonePrice =
     gemstones[config.stone].price * config.carats * cuts[config.cut].multiplier
-  const styleMultiplier =
-    config.style === 'halo' ? 1.28 : config.style === 'three-stone' ? 1.42 : config.style === 'eternity' ? 1.55 : 1
+  const styleMultiplier = config.style === 'eternity' ? 1.55 : 1
   const engravingPrice = config.engraving.trim() ? 90 : 0
   return Math.round(alloys[config.metal].price + stonePrice * styleMultiplier + engravingPrice)
 }
@@ -41,6 +38,10 @@ export function encodeConfig(config: RingConfig) {
 
 function isStyle(value: unknown): value is RingStyleId {
   return typeof value === 'string' && value in ringStyles
+}
+
+function isLegacyStyle(value: unknown) {
+  return value === 'halo' || value === 'three-stone'
 }
 
 function isStone(value: unknown): value is StoneId {
@@ -66,7 +67,9 @@ export function parseConfig(value: unknown): RingConfig | null {
     typeof parsed.size !== 'number' ||
     ![48, 50, 52, 54, 56, 58, 60, 62].includes(parsed.size) ||
     typeof parsed.engraving !== 'string' ||
-    (parsed.style !== undefined && !isStyle(parsed.style))
+    (parsed.style !== undefined &&
+      !isStyle(parsed.style) &&
+      !isLegacyStyle(parsed.style))
   ) {
     return null
   }
@@ -85,7 +88,7 @@ export function migrateConfig(value: unknown): RingConfig {
         ? (parsed.metal as RingConfig['metal'])
         : defaultConfig.metal,
     stone: isStone(parsed.stone) ? parsed.stone : defaultConfig.stone,
-    cut: isCut(parsed.cut) ? parsed.cut : defaultConfig.cut,
+    cut: 'round',
     carats:
       typeof parsed.carats === 'number' && parsed.carats >= 0.5 && parsed.carats <= 3
         ? parsed.carats

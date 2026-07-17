@@ -48,7 +48,7 @@ header {
 .section-title { display: flex; align-items: baseline; gap: 13px; margin-bottom: 10px; }
 .section-title h2 { margin: 0; font: 400 18px/1 var(--serif); color: var(--ink); }
 .style-group .section-title { justify-content: space-between; align-items: center; }
-.style-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
 .style-grid button { min-height: 58px; padding: 7px 3px; border: 1px solid transparent; background: #ebe7df; color: var(--muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font: 500 7px/1 var(--sans); text-transform: uppercase; letter-spacing: .06em; cursor: pointer; }
 .style-grid button.active { border-color: var(--ink); background: transparent; color: var(--ink); }
 .style-silhouette { width: 25px; height: 18px; position: relative; display: block; }

@@ -242,19 +242,6 @@ export default function App() {
               onChange={(event) => update('carats', Number(event.target.value))}
               aria-label="Poids de la pierre en carats"
             />
-            <div className="cuts">
-              {Object.entries(cuts).map(([id, cut]) => (
-                <button
-                  type="button"
-                  key={id}
-                  className={config.cut === id ? 'active' : ''}
-                  onClick={() => update('cut', id as RingConfig['cut'])}
-                >
-                  <span className={`cut-shape ${id}`} aria-hidden="true" />
-                  <span>{cut.label}</span>
-                </button>
-              ))}
-            </div>
           </section>
 
           <section className="control-group">

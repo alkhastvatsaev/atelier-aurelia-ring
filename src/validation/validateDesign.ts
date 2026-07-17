@@ -182,8 +182,19 @@ function validatePaveProngs(layout: SemanticLayout): RuleResult[] {
   )
 
   for (const stone of paveStones) {
-    const prongs = layout.beads.filter((bead) => bead.stoneId === stone.id)
-    const angles = prongs.map((prong) => prong.angleDeg).sort((a, b) => a - b)
+    const prongs = layout.beads.filter(
+      (bead) =>
+        bead.stoneId === stone.id ||
+        bead.sharedWithStoneId === stone.id,
+    )
+    const angles = prongs
+      .map((prong) =>
+        prong.stoneId === stone.id
+          ? prong.angleDeg
+          : prong.sharedAngleDeg,
+      )
+      .filter((angle): angle is 45 | 135 | 225 | 315 => angle !== undefined)
+      .sort((a, b) => a - b)
     if (
       prongs.length !== 4 ||
       angles.some((angle, index) => angle !== requiredAngles[index])

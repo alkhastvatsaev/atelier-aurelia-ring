@@ -25,7 +25,7 @@ describe('ring configuration', () => {
   })
 
   it('calculates the catalogue price deterministically', () => {
-    expect(ringPrice({ ...defaultConfig, engraving: '' })).toBe(3207)
-    expect(ringPrice(defaultConfig)).toBe(3297)
+    expect(ringPrice({ ...defaultConfig, engraving: '' })).toBe(3020)
+    expect(ringPrice(defaultConfig)).toBe(3110)
   })
 })

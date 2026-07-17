@@ -14,7 +14,7 @@ import {
 import { validateDesign } from '../validation/validateDesign'
 import { buildRingDesign } from './buildDesign'
 
-const styles: RingStyleId[] = ['solitaire', 'halo', 'three-stone', 'eternity']
+const styles: RingStyleId[] = ['solitaire', 'eternity']
 const cuts: CutId[] = ['round', 'oval', 'emerald']
 const stones: StoneId[] = ['diamond', 'sapphire', 'emerald']
 
@@ -48,6 +48,7 @@ describe('millimeter jewelry engine', () => {
         ...design.layout.galleries.map((entity) => entity.id),
         ...design.layout.beads.map((entity) => entity.id),
         ...design.layout.seats.map((entity) => entity.id),
+        ...design.layout.arches.map((entity) => entity.id),
       ]
       expect(new Set(ids).size).toBe(ids.length)
       expect(design.layout.units).toBe('mm')
@@ -55,22 +56,29 @@ describe('millimeter jewelry engine', () => {
       const stoneIds = new Set(design.layout.stones.map((stone) => stone.id))
       expect(design.layout.prongs.every((prong) => stoneIds.has(prong.stoneId))).toBe(true)
       expect(design.layout.galleries.every((gallery) => stoneIds.has(gallery.stoneId))).toBe(true)
+      expect(design.layout.beads.every((bead) => stoneIds.has(bead.stoneId))).toBe(true)
+      expect(
+        design.layout.beads.every(
+          (bead) =>
+            bead.sharedWithStoneId === undefined ||
+            stoneIds.has(bead.sharedWithStoneId),
+        ),
+      ).toBe(true)
       expect(design.layout.seats.every((seat) => stoneIds.has(seat.stoneId))).toBe(true)
+      expect(design.layout.arches.every((arch) => stoneIds.has(arch.stoneId))).toBe(true)
     }
   })
 
-  it('keeps the four style reference structures stable', () => {
+  it('keeps the two reference ring structures stable', () => {
     const solitaire = buildRingDesign({ ...defaultConfig, style: 'solitaire', cut: 'round' })
-    const halo = buildRingDesign({ ...defaultConfig, style: 'halo' })
-    const trilogy = buildRingDesign({ ...defaultConfig, style: 'three-stone' })
     const eternity = buildRingDesign({ ...defaultConfig, style: 'eternity' })
 
     expect(solitaire.layout.prongs).toHaveLength(6)
     expect(solitaire.layout.galleries).toHaveLength(1)
-    expect(halo.layout.stones.filter((stone) => stone.role === 'halo').length).toBeGreaterThan(7)
-    expect(trilogy.layout.stones.filter((stone) => stone.role === 'side')).toHaveLength(2)
-    expect(trilogy.layout.galleries).toHaveLength(3)
+    expect(solitaire.layout.stones.filter((stone) => stone.role === 'pave').length).toBeGreaterThanOrEqual(6)
+    expect(solitaire.layout.arches.length).toBeGreaterThanOrEqual(14)
     expect(eternity.layout.stones.every((stone) => stone.role === 'eternity')).toBe(true)
+    expect(eternity.layout.arches).toHaveLength(eternity.layout.stones.length * 2)
     expect(eternity.layout.resizable).toBe(false)
     expect(eternity.layout.shank.sizeBarDegrees).toBe(0)
 
@@ -79,16 +87,23 @@ describe('millimeter jewelry engine', () => {
         (stone) => stone.role === 'pave' || stone.role === 'eternity',
       )
       for (const stone of paveStones) {
-        const prongs = design.layout.beads.filter((bead) => bead.stoneId === stone.id)
+        const prongs = design.layout.beads.filter(
+          (bead) =>
+            bead.stoneId === stone.id ||
+            bead.sharedWithStoneId === stone.id,
+        )
         const seats = design.layout.seats.filter((seat) => seat.stoneId === stone.id)
         expect(prongs).toHaveLength(4)
         expect(seats).toHaveLength(1)
-        expect(prongs.map((prong) => prong.angleDeg).sort((a, b) => a - b)).toEqual([
-          45,
-          135,
-          225,
-          315,
-        ])
+        expect(
+          prongs
+            .map((prong) =>
+              prong.stoneId === stone.id
+                ? prong.angleDeg
+                : prong.sharedAngleDeg,
+            )
+            .sort((a, b) => (a ?? 0) - (b ?? 0)),
+        ).toEqual([45, 135, 225, 315])
       }
     }
   })

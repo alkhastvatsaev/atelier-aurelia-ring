@@ -17,12 +17,13 @@ The customer experience is in French. Technical documentation is in English.
 
 ## Product overview
 
-Atelier Aurelia combines a minimal luxury retail interface with a millimetre-based semantic geometry engine. It supports solitaire, halo, three-stone, and full-eternity architectures while checking setting, pavé, casting, and clearance rules against cited jewellery references.
+Atelier Aurelia combines a minimal luxury retail interface with a millimetre-based semantic geometry engine. The current collection is deliberately limited to two reference models: a six-prong river-shoulder solitaire and a full-eternity river band.
 
 ### Features
 
-- Procedural interactive 3D with separate round, oval, and emerald-cut geometry
-- Solitaire, halo, three-stone, and full-eternity style recipes
+- Procedural interactive 3D with true 58-facet round brilliant geometry
+- Six-prong solitaire with graduated river shoulders and open U galleries
+- Full-eternity river band with four-grain settings and scalloped galleries
 - EU/ISO ring-size conversion in millimetres
 - Yellow gold, rose gold, and platinum direct-casting profiles
 - Diamond, sapphire, and emerald density-aware dimension estimates
@@ -40,7 +41,7 @@ Prices and materials are illustrative. The browser report is a pre-CAD check, no
 src/domain/
 ├── configuration, units, alloys, casting profiles, gemstones
 src/styles/
-├── solitaire, halo, three-stone, eternity recipes
+├── solitaire and full-eternity river recipes
 src/geometry/
 ├── semantic millimetre layout and design pipeline
 src/validation/

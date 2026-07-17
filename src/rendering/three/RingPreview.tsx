@@ -3,7 +3,13 @@ import { useMemo } from 'react'
 import * as THREE from 'three'
 import { gemstones } from '../../domain/gemstones'
 import { alloys } from '../../domain/materials'
-import type { LayoutGallery, LayoutProng, LayoutStone, Vec3Mm } from '../../geometry/types'
+import type {
+  LayoutArch,
+  LayoutGallery,
+  LayoutProng,
+  LayoutStone,
+  Vec3Mm,
+} from '../../geometry/types'
 import type { RingDesign } from '../../geometry/buildDesign'
 import { BooleanShank } from './BooleanShank'
 import { createGemGeometry } from './gemGeometries'
@@ -145,6 +151,29 @@ function Gallery({ gallery, color }: { gallery: LayoutGallery; color: string }) 
   )
 }
 
+function Arch({ arch, color }: { arch: LayoutArch; color: string }) {
+  const geometry = useMemo(() => {
+    const curve = new THREE.QuadraticBezierCurve3(
+      new THREE.Vector3(...arch.points[0]),
+      new THREE.Vector3(...arch.points[1]),
+      new THREE.Vector3(...arch.points[2]),
+    )
+    return new THREE.TubeGeometry(
+      curve,
+      24,
+      arch.diameterMm / 2,
+      8,
+      false,
+    )
+  }, [arch])
+
+  return (
+    <mesh geometry={geometry} castShadow>
+      <MetalMaterial color={color} />
+    </mesh>
+  )
+}
+
 export function RingPreview({ design }: { design: RingDesign }) {
   const { layout } = design
   const alloy = alloys[layout.metal]
@@ -163,6 +192,9 @@ export function RingPreview({ design }: { design: RingDesign }) {
         ))}
         {layout.prongs.map((prong) => (
           <Prong key={prong.id} prong={prong} color={alloy.color} />
+        ))}
+        {layout.arches.map((arch) => (
+          <Arch key={arch.id} arch={arch} color={alloy.color} />
         ))}
         {layout.beads.map((bead) => (
           <mesh key={bead.id} position={bead.center} castShadow>

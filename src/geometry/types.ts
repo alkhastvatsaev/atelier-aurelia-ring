@@ -44,6 +44,8 @@ export type LayoutBead = {
   center: Vec3Mm
   diameterMm: number
   angleDeg: 45 | 135 | 225 | 315
+  sharedWithStoneId?: string
+  sharedAngleDeg?: 45 | 135 | 225 | 315
 }
 
 export type LayoutSeat = {
@@ -54,6 +56,13 @@ export type LayoutSeat = {
   depthMm: number
   topRadiusMm: number
   bottomRadiusMm: number
+}
+
+export type LayoutArch = {
+  id: string
+  stoneId: string
+  points: [Vec3Mm, Vec3Mm, Vec3Mm]
+  diameterMm: number
 }
 
 export type SemanticLayout = {
@@ -74,6 +83,7 @@ export type SemanticLayout = {
   galleries: LayoutGallery[]
   beads: LayoutBead[]
   seats: LayoutSeat[]
+  arches: LayoutArch[]
   resizable: boolean
   process: {
     linearShrinkage: number

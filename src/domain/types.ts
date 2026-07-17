@@ -1,7 +1,7 @@
 export type MetalId = 'yellow-gold' | 'rose-gold' | 'platinum'
 export type StoneId = 'diamond' | 'sapphire' | 'emerald'
 export type CutId = 'round' | 'oval' | 'emerald'
-export type RingStyleId = 'solitaire' | 'halo' | 'three-stone' | 'eternity'
+export type RingStyleId = 'solitaire' | 'eternity'
 
 export type RingConfig = {
   version: 2
