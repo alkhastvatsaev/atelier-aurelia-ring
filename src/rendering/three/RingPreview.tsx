@@ -13,11 +13,7 @@ import type {
 import type { RingDesign } from '../../geometry/buildDesign'
 import { BooleanShank } from './BooleanShank'
 import { createGemGeometry } from './gemGeometries'
-import {
-  GemMaterial,
-  GemRefractionMaterial,
-  MetalMaterial,
-} from './materials'
+import { GemRefractionMaterial, MetalMaterial } from './materials'
 
 const WORLD_PER_MM = 0.12
 
@@ -39,11 +35,10 @@ function GemMesh({
       rotation={stone.rotation}
       castShadow
     >
-      {stone.role === 'center' || stone.role === 'side' ? (
-        <GemRefractionMaterial stone={stone.stone} />
-      ) : (
-        <GemMaterial stone={stone.stone} small />
-      )}
+      <GemRefractionMaterial
+        stone={stone.stone}
+        small={stone.role === 'pave' || stone.role === 'eternity'}
+      />
     </mesh>
   )
 }
