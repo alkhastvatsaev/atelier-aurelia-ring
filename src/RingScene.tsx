@@ -1,7 +1,6 @@
 import {
   ContactShadows,
   Environment,
-  Lightformer,
   OrbitControls,
 } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
@@ -22,28 +21,30 @@ export function RingScene({ config }: { config: RingConfig }) {
       gl={{
         antialias: true,
         preserveDrawingBuffer: true,
-        toneMapping: THREE.ACESFilmicToneMapping,
+        toneMapping: THREE.AgXToneMapping,
       }}
       onCreated={({ gl }) => {
-        gl.toneMappingExposure = 1.18
+        gl.outputColorSpace = THREE.SRGBColorSpace
+        gl.toneMappingExposure = 0.95
       }}
       fallback={<div className="scene-loader">AURELIA</div>}
       aria-label="Aperçu 3D pré-CAO de votre bague"
     >
       <color attach="background" args={['#eee9e1']} />
-      <ambientLight intensity={0.18} />
+      <ambientLight intensity={0.04} />
       <directionalLight
-        position={[3, 5, 5]}
-        intensity={2.8}
+        color="#ffffff"
+        position={[3.5, 5.5, 4.5]}
+        intensity={1.35}
         castShadow
         shadow-mapSize={2048}
       />
-      <Environment resolution={384}>
-        <Lightformer form="rect" intensity={7} position={[0, 4, 4]} scale={[7, 1.2, 1]} />
-        <Lightformer form="rect" intensity={4} position={[-4, 0, 2]} scale={[1.5, 5, 1]} />
-        <Lightformer form="rect" intensity={3.5} position={[4, -1, 2]} scale={[1.5, 4, 1]} />
-        <Lightformer form="ring" intensity={3} position={[0, -4, 3]} scale={2.5} />
-      </Environment>
+      <Environment
+        files="/hdri/studio_small_09_1k.hdr"
+        background={false}
+        environmentIntensity={0.9}
+        environmentRotation={[0, 0.35, 0]}
+      />
       <RingPreview design={design} />
       <ContactShadows
         position={[0, -1.55, 0]}

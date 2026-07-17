@@ -1,6 +1,10 @@
 # Jewellery CAD and trade references
 
-Atelier Aurelia generates original parametric geometry in the browser. No third-party mesh or texture is bundled.
+Atelier Aurelia generates original parametric geometry in the browser. No third-party mesh is bundled; the only external visual asset is the documented CC0 studio environment below.
+
+## Lighting asset
+
+- [Studio Small 09 — Poly Haven](https://polyhaven.com/a/studio_small_09) — neutral 1K Radiance HDR environment, CC0. The file is stored locally so metal colour and reflections do not depend on a third-party runtime request.
 
 ## CAD models studied
 

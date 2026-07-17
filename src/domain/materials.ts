@@ -4,7 +4,7 @@ export const alloys: Record<MetalId, AlloyProfile> = {
   'yellow-gold': {
     id: 'yellow-gold',
     label: 'Or jaune 18k',
-    color: '#d7ad55',
+    color: '#cfaa55',
     densityGcm3: 15.6,
     price: 680,
     casting: {
@@ -20,7 +20,7 @@ export const alloys: Record<MetalId, AlloyProfile> = {
   'rose-gold': {
     id: 'rose-gold',
     label: 'Or rose 18k',
-    color: '#c98f79',
+    color: '#bd8374',
     densityGcm3: 15.2,
     price: 720,
     casting: {
@@ -36,7 +36,7 @@ export const alloys: Record<MetalId, AlloyProfile> = {
   platinum: {
     id: 'platinum',
     label: 'Platine 950',
-    color: '#d8d9d4',
+    color: '#c9cbca',
     densityGcm3: 20.7,
     price: 980,
     casting: {
