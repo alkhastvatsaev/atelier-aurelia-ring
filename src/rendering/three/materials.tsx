@@ -29,17 +29,18 @@ export function GemRefractionMaterial({
 }) {
   const envMap = useEnvironment({ files: '/hdri/studio_small_09_1k.hdr' })
   const optics = gemstones[stone]
+  const shaderDispersion = Math.min(0.006, optics.dispersion * 0.12)
 
   return (
     <MeshRefractionMaterial
       envMap={envMap}
-      color={optics.color}
+      color={stone === 'diamond' ? '#ffffff' : optics.color}
       ior={optics.ior}
-      bounces={small ? 2 : 4}
-      fresnel={1}
-      aberrationStrength={optics.dispersion}
-      fastChroma={small}
-      toneMapped={false}
+      bounces={small ? 2 : 3}
+      fresnel={0.65}
+      aberrationStrength={shaderDispersion}
+      fastChroma
+      toneMapped
     />
   )
 }

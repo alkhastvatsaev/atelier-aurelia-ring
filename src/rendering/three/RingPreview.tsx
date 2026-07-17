@@ -1,7 +1,6 @@
-import { Caustics, Float } from '@react-three/drei'
+import { Float } from '@react-three/drei'
 import { useMemo } from 'react'
 import * as THREE from 'three'
-import { gemstones } from '../../domain/gemstones'
 import { alloys } from '../../domain/materials'
 import type {
   LayoutArch,
@@ -44,35 +43,7 @@ function GemMesh({
 }
 
 function Gem({ stone }: { stone: LayoutStone }) {
-  if (stone.role !== 'center') {
-    return <GemMesh stone={stone} position={stone.center} />
-  }
-
-  const projectionY =
-    stone.center[1] - stone.dimensions.pavilionDepth - 0.5
-  const localStonePosition: Vec3Mm = [
-    0,
-    stone.center[1] - projectionY,
-    0,
-  ]
-
-  return (
-    <Caustics
-      position={[stone.center[0], projectionY, stone.center[2]]}
-      frames={1}
-      causticsOnly={false}
-      backside
-      ior={gemstones[stone.stone].ior}
-      backsideIOR={1}
-      worldRadius={0.025}
-      intensity={0.065}
-      resolution={256}
-      lightSource={[3.5, 5.5, 4.5]}
-      color={gemstones[stone.stone].color}
-    >
-      <GemMesh stone={stone} position={localStonePosition} />
-    </Caustics>
-  )
+  return <GemMesh stone={stone} position={stone.center} />
 }
 
 function Rod({
