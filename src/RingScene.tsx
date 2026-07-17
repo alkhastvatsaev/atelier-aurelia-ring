@@ -17,7 +17,7 @@ export function RingScene({ config }: { config: RingConfig }) {
     <Canvas
       shadows
       dpr={[1, 2]}
-      camera={{ position: [0, 0.12, 5.8], fov: 32 }}
+      camera={{ position: [0, 0, 5.8], fov: 32 }}
       gl={{
         antialias: true,
         preserveDrawingBuffer: true,
@@ -57,10 +57,9 @@ export function RingScene({ config }: { config: RingConfig }) {
       <OrbitControls
         makeDefault
         enablePan={false}
+        target={[0, 0, 0]}
         minDistance={4.3}
         maxDistance={7.2}
-        autoRotate
-        autoRotateSpeed={0.28}
         minPolarAngle={Math.PI / 3.2}
         maxPolarAngle={Math.PI / 1.55}
       />

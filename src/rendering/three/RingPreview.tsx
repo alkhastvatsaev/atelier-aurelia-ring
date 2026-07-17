@@ -110,7 +110,7 @@ export function RingPreview({ design }: { design: RingDesign }) {
     <Float speed={0.75} rotationIntensity={0.02} floatIntensity={0.05}>
       <group
         scale={WORLD_PER_MM}
-        rotation={[0.5, -0.24, -0.055]}
+        rotation={[0.5, 0, 0]}
         position={[0, -0.18, 0]}
       >
         <BooleanShank layout={layout} color={alloy.color} />
