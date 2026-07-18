@@ -110,6 +110,10 @@ The scene is lazy-loaded, device pixel ratio is capped, and design calculations 
 
 All processing happens in the browser. Stored and shared configurations are treated as untrusted data, validated, and migrated before use. There is no authentication, payment, inventory, or backend.
 
+## Author
+
+Built by [Alkhast Vatsaev](https://alkhastvatsaev.dev) — junior Full Stack JavaScript/TypeScript developer ([portfolio](https://alkhastvatsaev.dev), [FR](https://alkhastvatsaev.dev/fr/developpeur-full-stack)).
+
 ## Licence
 
 Released under the [MIT License](./LICENSE).
